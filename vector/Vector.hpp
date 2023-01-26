@@ -21,7 +21,7 @@ namespace ft
 		typedef std::reverse_iterator<iterator> reverse_iterator;
 		typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
-		explicit vector(const Allocator & = Allocator()) : _alloc(a), _size(0), _capacity(0){
+		explicit vector(const Allocator &a = Allocator()) : _alloc(a), _size(0), _capacity(0){
 
 																				};
 		explicit vector(size_type n, const T &value = T(),
@@ -39,18 +39,24 @@ namespace ft
 		vector(InputIterator first, InputIterator last,
 			   const Allocator &a = Allocator())
 		{
-			_alloc = a;
-			_size = last - first;
-			_data = a.allocate(size);
-			for (int i = 0; i < size; i++)
-			{
-			}
-		};
-		vector(const vector<T, Allocator> &x){
+			construct(first,last,a);
+		}
 
+		vector(const vector<T, Allocator> &x){
+			construct(x.begin(),x,end(),_alloc);
 		};
-		~vector();
-		vector<T, Allocator> &operator=(const vector<T, Allocator> &x);
+		~vector(){
+			for (int i = 0; i < _capacity;i++)
+			{
+				_alloc.destroy(&data[i]);
+			}
+			_alloc.deallocate(_data,_capacity);
+		}
+		vector<T, Allocator> &operator=(const vector<T, Allocator> &x){
+			_alloc = Allocator();
+			construct(x.begin(),x.end(),_alloc);
+			return (*this);
+		}
 		template <class InputIterator>
 		void assign(InputIterator first, InputIterator last);
 		void assign(size_type n, const T &u);
@@ -67,10 +73,32 @@ namespace ft
 		// 23.2.4.2 capacity:
 		size_type size() const;
 		size_type max_size() const;
-		void resize(size_type sz, T c = T());
+		void resize(size_type sz, T c = T()){
+			if (sz < _size){
+				for (int i = sz; i < size; i++)
+					_alloc.destroy(&_data[i]);
+			}
+			else if (sz > size)
+			{
+				for (int i = size; i < sz; i++)
+					this->push_back(c);
+			}
+			_size = sz;
+		}
 		size_type capacity() const;
 		bool empty() const;
-		void reserve(size_type n);
+		void reserve(size_type n){
+			if (_capacity < n){
+				T* newData = _alloc.allocate(n);
+				for (int i = 0; i < _size; i){
+					_alloc.construct(newData[i],_data[i]);
+					_alloc.destroy(&_data[i]);
+				}
+				_alloc.deallocate(_data,_capacity);
+				_data = newData;
+				_capacity = n;
+			}
+		}
 		// element access:
 		reference operator[](size_type n);
 		const_reference operator[](size_type n) const;
@@ -83,18 +111,21 @@ namespace ft
 		// 23.2.4.3 modifiers:
 		void push_back(const T &x){
 			if (_size + 1 > _capacity){
-				std::array<T,2 * _capacity> tmp;
-				for (int i = 0;i < size + 1;i++){
-					
-				}
+				this->reserve(2 * capacity);
+				_capacity *= 2; 
 			}
+			_alloc.construct(_data[_size] , x);
+			_size++;
+		}
+		void pop_back(){
+			if (_size > 0)
+				this->resize(_size -1);
+
 		};
-		void pop_back();
 		iterator insert(iterator position, const T &x);
 		void insert(iterator position, size_type n, const T &x);
 		template <class InputIterator>
-		void insert(iterator position,
-					InputIterator first, InputIterator last);
+		void insert(iterator position, InputIterator first, InputIterator last);
 		iterator erase(iterator position);
 		iterator erase(iterator first, iterator last);
 		void swap(vector<T, Allocator> &);
@@ -105,6 +136,15 @@ namespace ft
 		Allocator _alloc;
 		size_t _size;
 		size_t _capacity;
+		void construct(InputIterator first, InputIterator last,
+			   const Allocator &a = Allocator()){
+			_alloc = a;
+			_size = 0;
+			_capacity = 0;
+			_data = a.allocate(size);
+			for (; first != last; first++)
+				_this.push_back(*first);
+		}
 };
 	template <class T, class Allocator>
 	bool operator==(const vector<T, Allocator> &x, const vector<T, Allocator> &y);
