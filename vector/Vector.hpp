@@ -1,5 +1,6 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
+
 #include <memory>
 namespace ft
 {
@@ -52,15 +53,22 @@ namespace ft
 			}
 			_alloc.deallocate(_data,_capacity);
 		}
+		//not working >> 
 		vector<T, Allocator> &operator=(const vector<T, Allocator> &x){
-			_alloc = Allocator();
+			_alloc = x.get_allocator();
 			construct(x.begin(),x.end(),_alloc);
 			return (*this);
 		}
 		template <class InputIterator>
-		void assign(InputIterator first, InputIterator last);
-		void assign(size_type n, const T &u);
-		allocator_type get_allocator() const;
+		void assign(InputIterator first, InputIterator last){
+
+		}
+		void assign(size_type n, const T &u){
+
+		}
+		allocator_type get_allocator() const{
+			return (_alloc);
+		};
 		// iterators:
 		iterator begin();
 		const_iterator begin() const;
@@ -71,8 +79,12 @@ namespace ft
 		reverse_iterator rend();
 		const_reverse_iterator rend() const;
 		// 23.2.4.2 capacity:
-		size_type size() const;
-		size_type max_size() const;
+		size_type size() const{
+			return (_size);
+		}
+		size_type max_size() const{
+			return _alloc.max_size();
+		}
 		void resize(size_type sz, T c = T()){
 			if (sz < _size){
 				for (int i = sz; i < size; i++)
@@ -85,8 +97,14 @@ namespace ft
 			}
 			_size = sz;
 		}
-		size_type capacity() const;
-		bool empty() const;
+		size_type capacity() const{
+			return (_capacity);
+		}
+		bool empty() const{
+			if (!_size)
+				return true;
+			return false;
+		}
 		void reserve(size_type n){
 			if (_capacity < n){
 				T* newData = _alloc.allocate(n);
@@ -119,8 +137,7 @@ namespace ft
 		}
 		void pop_back(){
 			if (_size > 0)
-				this->resize(_size -1);
-
+				this->resize(_size - 1);
 		};
 		iterator insert(iterator position, const T &x);
 		void insert(iterator position, size_type n, const T &x);
