@@ -1,10 +1,14 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
+#include "rev_iterator.hpp"
+#include "iterator.hpp"
+#include "Utils.hpp"
 #include <memory>
+
 namespace ft
 {
-	template <class T, class Allocator = std::allocator<T>>
+	template <class T, class Allocator = std::allocator<T> >
 	class vector
 	{
 	public:
@@ -13,7 +17,8 @@ namespace ft
 		typedef typename Allocator::const_reference const_reference;
 		typedef typename Allocator::pointer pointer;
 		typedef typename Allocator::const_pointer const_pointer;
-		typedef pointer iterator;
+		//typedef pointer iterator;
+		typedef iterator<pointer>		iterator;
 		typedef const_pointer const_iterator;
 		typedef size_t size_type;
 		typedef ptrdiff_t difference_type;
@@ -21,13 +26,14 @@ namespace ft
 		typedef Allocator allocator_type;
 		typedef std::reverse_iterator<iterator> reverse_iterator;
 		typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
-
-		explicit vector(const Allocator &a = Allocator()) : _alloc(a), _size(0), _capacity(0){
-
+	
+		explicit vector(const Allocator &a = Allocator()) : _data(NULL)	, _alloc(a), _size(0), _capacity(0){
+	
 																				};
 		explicit vector(size_type n, const T &value = T(),
-						const Allocator & = Allocator())
+						const Allocator &a = Allocator())
 		{
+			_alloc = a;
 			_data = _alloc.allocate(n);
 			for (int i = 0; i < n; i++)
 			{
@@ -44,19 +50,23 @@ namespace ft
 		}
 
 		vector(const vector<T, Allocator> &x){
-			construct(x.begin(),x,end(),_alloc);
+			construct(x.begin(),x.end(),x.get_allocator());
 		};
 		~vector(){
-			for (int i = 0; i < _capacity;i++)
-			{
-				_alloc.destroy(&data[i]);
-			}
+			clear();
 			_alloc.deallocate(_data,_capacity);
 		}
 		//not working >> 
 		vector<T, Allocator> &operator=(const vector<T, Allocator> &x){
-			_alloc = x.get_allocator();
-			construct(x.begin(),x.end(),_alloc);
+			clear();
+			if (!_data)
+				_alloc.deallocate(_data,_capacity);
+			_data = _alloc.allocate(x._capacity);
+			for(int i = 0; i < x._size; i++){
+				_alloc.construct(&_data[i],x[i]);
+			}
+			_size = x._size;
+			_capacity = x._capacity;
 			return (*this);
 		}
 		template <class InputIterator>
@@ -68,11 +78,15 @@ namespace ft
 		}
 		allocator_type get_allocator() const{
 			return (_alloc);
-		};
+		}
 		// iterators:
-		iterator begin();
+		iterator begin(){
+			return iterator(_data);
+		}
 		const_iterator begin() const;
-		iterator end();
+		iterator end(){
+			return iterator(_data + _size);
+		}
 		const_iterator end() const;
 		reverse_iterator rbegin();
 		const_reverse_iterator rbegin() const;
@@ -87,12 +101,12 @@ namespace ft
 		}
 		void resize(size_type sz, T c = T()){
 			if (sz < _size){
-				for (int i = sz; i < size; i++)
+				for (int i = sz; i < _size; i++)
 					_alloc.destroy(&_data[i]);
 			}
-			else if (sz > size)
+			else if (sz > _size)
 			{
-				for (int i = size; i < sz; i++)
+				for (int i = _size; i < sz; i++)
 					this->push_back(c);
 			}
 			_size = sz;
@@ -106,10 +120,12 @@ namespace ft
 			return false;
 		}
 		void reserve(size_type n){
+			if (n == 0)
+				n = 1;
 			if (_capacity < n){
 				T* newData = _alloc.allocate(n);
-				for (int i = 0; i < _size; i){
-					_alloc.construct(newData[i],_data[i]);
+				for (int i = 0; i < _size; i++){
+					_alloc.construct(&(newData[i]),_data[i]);
 					_alloc.destroy(&_data[i]);
 				}
 				_alloc.deallocate(_data,_capacity);
@@ -129,10 +145,10 @@ namespace ft
 		// 23.2.4.3 modifiers:
 		void push_back(const T &x){
 			if (_size + 1 > _capacity){
-				this->reserve(2 * capacity);
+				this->reserve(2 * _capacity);
 				_capacity *= 2; 
 			}
-			_alloc.construct(_data[_size] , x);
+			_alloc.construct(&(_data[_size]) , x);
 			_size++;
 		}
 		void pop_back(){
@@ -146,21 +162,28 @@ namespace ft
 		iterator erase(iterator position);
 		iterator erase(iterator first, iterator last);
 		void swap(vector<T, Allocator> &);
-		void clear();
+		void clear(){
+			for (int i = 0; i < _size;i++)
+			{
+				_alloc.destroy(&_data[i]);
+			}
+			_size = 0;
+		}
 	private:
 // pointer to the underlying array allocated by the allocator
 		T *_data;
 		Allocator _alloc;
 		size_t _size;
 		size_t _capacity;
+		template <typename InputIterator>
 		void construct(InputIterator first, InputIterator last,
 			   const Allocator &a = Allocator()){
 			_alloc = a;
 			_size = 0;
 			_capacity = 0;
-			_data = a.allocate(size);
+			_data = a.allocate(_size);
 			for (; first != last; first++)
-				_this.push_back(*first);
+				this->push_back(*first);
 		}
 };
 	template <class T, class Allocator>
