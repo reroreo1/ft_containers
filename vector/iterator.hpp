@@ -3,38 +3,62 @@
 #include "Utils.hpp"
 namespace ft
 {
-	template <class Iterator>
-	class iterator
+	template <class T>
+	class iterator : public std::iterator<std::random_access_iterator_tag, T>
 	{
 	protected:
-		Iterator current;
+		T *current;
 
 	public:
-		typedef Iterator
-			iterator_type;
-		typedef typename iterator_traits<Iterator>::difference_type
-			difference_type;
-		typedef typename iterator_traits<Iterator>::reference
-			reference;
-		typedef typename iterator_traits<Iterator>::pointer
-			pointer;
-		iterator() {}
-		explicit iterator(Iterator x)
+		typedef   T    value_type ;
+        typedef  std::ptrdiff_t  difference_type ;
+        typedef T*  pointer ;
+        typedef  T&  reference ;
+        typedef std::random_access_iterator_tag iterator_category;
+			// pointer;
+	operator iterator<const T> ()
+		{
+			return iterator<const T>(this->base());
+		}
+
+		operator iterator< const T> () const
+		{
+			return iterator<const T>(this->base());
+		}
+
+
+		//    template <typename   U> operator const U () {return current;}
+
+		explicit iterator(pointer x)
 		{
 			current = x;
 		}
+
+
+		 iterator()
+		{
+			this->current = NULL;
+		}
+
+
+		iterator operator=(const  iterator &lh  ) 
+		{
+ 			this->current = lh.base();
+			return (*this);
+		}
+
 		template <class U>
 		iterator(const iterator<U> &u)
 		{
-			current = u.current;
+			current = u.base();
 		}
-		Iterator base() const
+		pointer base() const
 		{
 			return (current);
 		} // explicit
 		reference operator*() const
 		{
-			Iterator tmp = current;
+			pointer tmp = current;
 			return *tmp;
 		}
 		pointer operator->() const
@@ -88,58 +112,72 @@ namespace ft
 			return (current[n]);
 		}
 	};
-	template <class Iterator>
+	template <class T>
 	bool operator==(
-		const iterator<Iterator> &x,
-		const iterator<Iterator> &y)
+		const iterator<T> &x,
+		const iterator<T> &y)
 	{
+				printf("[%p] [%p]\n",x.base(), y.base() );
+
 		return (x.base() == y.base());
 	}
-	template <class Iterator>
+	template <class T>
 	bool operator<(
-		const iterator<Iterator> &x, // when you will get error while comparing const iterator and iterator plase add another type to template class Iterator1 Iterator2 so all type can work
-		const iterator<Iterator> &y)
+		const iterator<T> &x, // when you will get error while comparing const iterator and iterator plase add another type to template class Iterator1 Iterator2 so all type can work
+		const iterator<T> &y)
 	{
 		return (x.base() < y.base());
 	}
-	template <class Iterator>
+	template <class T>
 	bool operator!=(
-		const iterator<Iterator> &x,
-		const iterator<Iterator> &y)
+		const iterator<T> &x,
+		const iterator<T> &y)
 	{
 		return (x.base() != y.base());
 	}
-	template <class Iterator>
+
+
+
+	template <class L, class R>
+	bool operator!=(
+		const iterator<L> &x,
+		const iterator<R> &y)
+	{
+		return (x.base() != y.base());
+	}
+	template <class T>
 	bool operator>(
-		const iterator<Iterator> &x,
-		const iterator<Iterator> &y)
+		const iterator<T> &x,
+		const iterator<T> &y)
 	{
 		return (x.base() > y.base());
 	}
-	template <class Iterator>
-	bool operator>=(const iterator<Iterator> &x, const iterator<Iterator> &y)
+	template <class T>
+	bool operator>=(const iterator<T> &x, const iterator<T> &y)
 	{
 		return (x.base() >= y.base());
 	}
-	template <class Iterator>
+	template <class T>
 	bool operator<=(
-		const iterator<Iterator> &x,
-		const iterator<Iterator> &y)
+		const iterator<T> &x,
+		const iterator<T> &y)
 	{
 		return (x.base() <= y.base());
 	}
-	template <class Iterator>
-	typename iterator<Iterator>::difference_type operator-(
-		const iterator<Iterator> &x,
-		const iterator<Iterator> &y)
+	template <class T>
+	typename iterator<T>::difference_type operator-(
+		const iterator<T> &x,
+		const iterator<T> &y)
 	{
 		return y.base() - x.base();
 	}
-	template <class Iterator>
-	iterator<Iterator> operator+(
-		typename iterator<Iterator>::difference_type n,
-		const iterator<Iterator> &x)
+	template <class T>
+	iterator<T> operator+(
+		typename iterator<T>::difference_type n,
+		const iterator<T> &x)
 	{
-		return iterator<Iterator>(x.base() + n);
+		return iterator<T>(x.base() + n);
 	}
 }
+
+// 'ft::vector<char>::const_iterator' (aka 'iterator<const char>') and 'ft::vector<char, std::__1::allocator<char> >::iterator' (aka 'iterator<char>'))

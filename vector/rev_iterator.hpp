@@ -18,11 +18,21 @@ namespace ft
 			reference;
 		typedef typename iterator_traits<Iterator>::pointer
 			pointer;
-		reverse_iterator() {}
+		reverse_iterator() 
+		{
+			this->current = Iterator();
+		}
 		explicit reverse_iterator(Iterator x)
 		{
 			current = x;
 		}
+
+		reverse_iterator operator=(const  reverse_iterator &lh  ) 
+		{
+ 			this->current = lh.base();
+			return (*this);
+		}
+
 		template <class U>
 		reverse_iterator(const reverse_iterator<U> &u)
 		{
@@ -105,7 +115,7 @@ namespace ft
 		const reverse_iterator<Iterator> &x,
 		const reverse_iterator<Iterator> &y)
 	{
-		return !(x == y);
+		return (x.base() != y.base());
 	}
 	template <class Iterator>
 	bool operator>(

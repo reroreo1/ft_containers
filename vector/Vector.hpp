@@ -18,14 +18,16 @@ namespace ft
 		typedef typename Allocator::pointer pointer;
 		typedef typename Allocator::const_pointer const_pointer;
 		//typedef pointer iterator;
-		typedef iterator<pointer>		iterator;
-		typedef const_pointer const_iterator;
+		typedef T value_type;
+		typedef  iterator<const value_type>			const_iterator;
+		typedef iterator<value_type>		iterator;
+		// typedef const_pointer const_iterator;
 		typedef size_t size_type;
 		typedef ptrdiff_t difference_type;
-		typedef T value_type;
 		typedef Allocator allocator_type;
-		typedef std::reverse_iterator<iterator> reverse_iterator;
-		typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+		typedef ft::reverse_iterator<iterator> reverse_iterator;
+		// typedef ft::reverse_iterator<iterator> reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 	
 		explicit vector(const Allocator &a = Allocator()) : _data(NULL)	, _alloc(a), _size(0), _capacity(0){
 	
@@ -81,16 +83,28 @@ namespace ft
 		}
 		// iterators:
 		iterator begin(){
+			// printf("%p\n", _data + _size );
 			return iterator(_data);
 		}
-		const_iterator begin() const;
+		const_iterator begin() const
+		{
+			return const_iterator(_data);
+		}
 		iterator end(){
 			return iterator(_data + _size);
 		}
-		const_iterator end() const;
-		reverse_iterator rbegin();
-		const_reverse_iterator rbegin() const;
-		reverse_iterator rend();
+		const_iterator end() const
+		{
+		
+			return const_iterator(_data + _size);
+		}
+		reverse_iterator rbegin(){
+			return reverse_iterator(end());
+		}
+		const_reverse_iterator rbegin() const{};
+		reverse_iterator rend(){
+			return(reverse_iterator(begin()));
+		}
 		const_reverse_iterator rend() const;
 		// 23.2.4.2 capacity:
 		size_type size() const{
