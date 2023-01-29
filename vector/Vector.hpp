@@ -25,9 +25,9 @@ namespace ft
 		typedef size_t size_type;
 		typedef ptrdiff_t difference_type;
 		typedef Allocator allocator_type;
-		typedef ft::reverse_iterator<iterator> reverse_iterator;
+		typedef reverse_iterator<const_iterator> const_reverse_iterator;
+		typedef reverse_iterator<iterator> reverse_iterator;
 		// typedef ft::reverse_iterator<iterator> reverse_iterator;
-		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 	
 		explicit vector(const Allocator &a = Allocator()) : _data(NULL)	, _alloc(a), _size(0), _capacity(0){
 	
@@ -37,7 +37,7 @@ namespace ft
 		{
 			_alloc = a;
 			_data = _alloc.allocate(n);
-			for (int i = 0; i < n; i++)
+			for (size_type i = 0; i < n; i++)
 			{
 				_alloc.construct(&_data[i], value);
 			}
@@ -64,7 +64,7 @@ namespace ft
 			if (!_data)
 				_alloc.deallocate(_data,_capacity);
 			_data = _alloc.allocate(x._capacity);
-			for(int i = 0; i < x._size; i++){
+			for(size_type i = 0; i < x._size; i++){
 				_alloc.construct(&_data[i],x[i]);
 			}
 			_size = x._size;
@@ -73,7 +73,7 @@ namespace ft
 		}
 		template <class InputIterator>
 		void assign(InputIterator first, InputIterator last){
-
+				
 		}
 		void assign(size_type n, const T &u){
 
@@ -95,7 +95,6 @@ namespace ft
 		}
 		const_iterator end() const
 		{
-		
 			return const_iterator(_data + _size);
 		}
 		reverse_iterator rbegin(){
@@ -105,8 +104,9 @@ namespace ft
 		reverse_iterator rend(){
 			return(reverse_iterator(begin()));
 		}
-		const_reverse_iterator rend() const;
-		// 23.2.4.2 capacity:
+		const_reverse_iterator rend() const{
+			return const_reverse_iterator(begin());
+		}
 		size_type size() const{
 			return (_size);
 		}
@@ -115,12 +115,12 @@ namespace ft
 		}
 		void resize(size_type sz, T c = T()){
 			if (sz < _size){
-				for (int i = sz; i < _size; i++)
+				for (size_type i = sz; i < _size; i++)
 					_alloc.destroy(&_data[i]);
 			}
 			else if (sz > _size)
 			{
-				for (int i = _size; i < sz; i++)
+				for (size_type i = _size; i < sz; i++)
 					this->push_back(c);
 			}
 			_size = sz;
@@ -138,7 +138,7 @@ namespace ft
 				n = 1;
 			if (_capacity < n){
 				T* newData = _alloc.allocate(n);
-				for (int i = 0; i < _size; i++){
+				for (size_type i = 0; i < _size; i++){
 					_alloc.construct(&(newData[i]),_data[i]);
 					_alloc.destroy(&_data[i]);
 				}
@@ -177,14 +177,14 @@ namespace ft
 		iterator erase(iterator first, iterator last);
 		void swap(vector<T, Allocator> &);
 		void clear(){
-			for (int i = 0; i < _size;i++)
+			for (size_type i = 0; i < _size;i++)
 			{
 				_alloc.destroy(&_data[i]);
 			}
 			_size = 0;
 		}
 	private:
-// pointer to the underlying array allocated by the allocator
+// posize_typeer to the underlying array allocated by the allocator
 		T *_data;
 		Allocator _alloc;
 		size_t _size;

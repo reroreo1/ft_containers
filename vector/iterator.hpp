@@ -16,7 +16,7 @@ namespace ft
         typedef  T&  reference ;
         typedef std::random_access_iterator_tag iterator_category;
 			// pointer;
-	operator iterator<const T> ()
+		operator iterator<const T> ()
 		{
 			return iterator<const T>(this->base());
 		}
@@ -121,22 +121,13 @@ namespace ft
 
 		return (x.base() == y.base());
 	}
-	template <class T>
+	template <class L, class R>
 	bool operator<(
-		const iterator<T> &x, // when you will get error while comparing const iterator and iterator plase add another type to template class Iterator1 Iterator2 so all type can work
-		const iterator<T> &y)
+		const iterator<L> &x, // when you will get error while comparing const iterator and iterator plase add another type to template class Iterator1 Iterator2 so all type can work
+		const iterator<R> &y)
 	{
 		return (x.base() < y.base());
 	}
-	template <class T>
-	bool operator!=(
-		const iterator<T> &x,
-		const iterator<T> &y)
-	{
-		return (x.base() != y.base());
-	}
-
-
 
 	template <class L, class R>
 	bool operator!=(
@@ -145,22 +136,22 @@ namespace ft
 	{
 		return (x.base() != y.base());
 	}
-	template <class T>
+	template <class L, class R>
 	bool operator>(
-		const iterator<T> &x,
-		const iterator<T> &y)
+		const iterator<L> &x,
+		const iterator<R> &y)
 	{
 		return (x.base() > y.base());
 	}
-	template <class T>
-	bool operator>=(const iterator<T> &x, const iterator<T> &y)
+	template <class L, class R>
+	bool operator>=(const iterator<L> &x, const iterator<R> &y)
 	{
 		return (x.base() >= y.base());
 	}
-	template <class T>
+	template <class L, class R>
 	bool operator<=(
-		const iterator<T> &x,
-		const iterator<T> &y)
+		const iterator<L> &x,
+		const iterator<R> &y)
 	{
 		return (x.base() <= y.base());
 	}
