@@ -73,17 +73,29 @@ namespace ft
 		}
 		template <class InputIterator>
 		void assign(InputIterator first, InputIterator last){
-				
+			int  a = std::distance(first,last);
+			int i = 0;
+			clear();
+			if (a >= _capacity)
+			reserve(a);
+			for (; first != last;++first)
+			{
+				_alloc.construct(&_data[i++],*first);
+			}
+			_size = a;
 		}
 		void assign(size_type n, const T &u){
-
+			clear();
+			reserve(n);
+			for (size_type i = 0; i < n;i++)
+				_alloc.construct(&_data[i],u);
+			_size = n;
 		}
 		allocator_type get_allocator() const{
 			return (_alloc);
 		}
 		// iterators:
 		iterator begin(){
-			// printf("%p\n", _data + _size );
 			return iterator(_data);
 		}
 		const_iterator begin() const
@@ -134,10 +146,11 @@ namespace ft
 			return false;
 		}
 		void reserve(size_type n){
+			T* newData;
 			if (n == 0)
 				n = 1;
 			if (_capacity < n){
-				T* newData = _alloc.allocate(n);
+				newData = _alloc.allocate(n);
 				for (size_type i = 0; i < _size; i++){
 					_alloc.construct(&(newData[i]),_data[i]);
 					_alloc.destroy(&_data[i]);
@@ -160,9 +173,9 @@ namespace ft
 		void push_back(const T &x){
 			if (_size + 1 > _capacity){
 				this->reserve(2 * _capacity);
-				_capacity *= 2; 
+				//_capacity *= 2; 
 			}
-			_alloc.construct(&(_data[_size]) , x);
+			_alloc.construct((_data+_size) , x);
 			_size++;
 		}
 		void pop_back(){

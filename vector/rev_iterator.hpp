@@ -144,7 +144,7 @@ namespace ft
 		const reverse_iterator<T> &x,
 		const reverse_iterator<T> &y)
 	{
-		return (y.current - x.current);
+		return (y.base() - x.base());
 	}
 	template <class T>
 	reverse_iterator<T> operator+(

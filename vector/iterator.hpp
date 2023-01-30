@@ -160,7 +160,7 @@ namespace ft
 		const iterator<T> &x,
 		const iterator<T> &y)
 	{
-		return y.base() - x.base();
+		return x.base() - y.base();
 	}
 	template <class T>
 	iterator<T> operator+(
