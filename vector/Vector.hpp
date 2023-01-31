@@ -48,11 +48,11 @@ namespace ft
 		vector(InputIterator first, InputIterator last,
 			   const Allocator &a = Allocator())
 		{
-			construct(first,last,a);
+			construct1(first, last, a);
 		}
 
 		vector(const vector<T, Allocator> &x){
-			construct(x.begin(),x.end(),x.get_allocator());
+			construct1(x.begin(),x.end(),x._alloc);
 		};
 		~vector(){
 			clear();
@@ -182,10 +182,39 @@ namespace ft
 			if (_size > 0)
 				this->resize(_size - 1);
 		};
-		iterator insert(iterator position, const T &x);
-		void insert(iterator position, size_type n, const T &x);
+		iterator insert(iterator position, const T &x){
+			reserve(_size + 1);
+			for (iterator it = end(); it != position; it--)
+				*it = *(it - 1);
+			*position = x;
+			_size++;
+			return (begin());
+		}
+		void insert(iterator position, size_type n, const T &x){
+			reserve(_size + n);
+			std::cout << "capacity === " << _capacity << std::endl;
+			std::cout << "size === " << _size << std::endl;
+			std::cout << "n === " << n << std::endl;
+			iterator it = this->end();
+			it--;
+			std::cout << "it === " << *it << std::endl;
+			for (; it != position + n; it--){
+				*it = *(it - 1);
+			}
+			for (size_type i = 0; i < n; i++)
+				*(position + i) = x;
+			_size += n;
+		}
 		template <class InputIterator>
-		void insert(iterator position, InputIterator first, InputIterator last);
+		void insert(iterator position, InputIterator first, InputIterator last){
+			size_type a = std::distance(first,last);
+			reserve(_size + a);
+			for (iterator it = end(); it != position + a; it--)
+				*it = *(it - 1);
+			for (size_type i = 0; first != last; i++)
+				*(position++) = *(first++);
+			_size += a;
+		}
 		iterator erase(iterator position);
 		iterator erase(iterator first, iterator last);
 		void swap(vector<T, Allocator> &);
@@ -203,8 +232,7 @@ namespace ft
 		size_t _size;
 		size_t _capacity;
 		template <typename InputIterator>
-		void construct(InputIterator first, InputIterator last,
-			   const Allocator &a = Allocator()){
+		void construct1(InputIterator first, InputIterator last, const Allocator &a = Allocator()){
 			_alloc = a;
 			_size = 0;
 			_capacity = 0;

@@ -16,15 +16,15 @@ namespace ft
         typedef typename  T::reference  reference ;
         typedef std::random_access_iterator_tag iterator_category;
 
-		operator reverse_iterator<const T> ()
-		{
-			return reverse_iterator<const T>(this->base());
-		}
+		// operator reverse_iterator<const T> ()
+		// {
+		// 	return reverse_iterator<const T>(this->base());
+		// }
 
-		operator reverse_iterator< const T> () const
-		{
-			return reverse_iterator<const T>(this->base());
-		}
+		// operator reverse_iterator< const T> () const
+		// {
+		// 	return reverse_iterator<const T>(this->base());
+		// }
 		reverse_iterator() 
 		{
 			this->current = T();

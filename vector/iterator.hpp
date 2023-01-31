@@ -16,15 +16,15 @@ namespace ft
         typedef  T&  reference ;
         typedef std::random_access_iterator_tag iterator_category;
 			// pointer;
-		operator iterator<const T> ()
-		{
-			return iterator<const T>(this->base());
-		}
+		// operator iterator<const T> ()
+		// {
+		// 	return iterator<const T>(this->base());
+		// }
 
-		operator iterator< const T> () const
-		{
-			return iterator<const T>(this->base());
-		}
+		// operator iterator< const T> () const
+		// {
+		// 	return iterator<const T>(this->base());
+		// }
 
 
 		//    template <typename   U> operator const U () {return current;}
