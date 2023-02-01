@@ -58,7 +58,6 @@ namespace ft
 			clear();
 			_alloc.deallocate(_data,_capacity);
 		}
-		//not working >> 
 		vector<T, Allocator> &operator=(const vector<T, Allocator> &x){
 			clear();
 			if (!_data)
@@ -161,14 +160,34 @@ namespace ft
 			}
 		}
 		// element access:
-		reference operator[](size_type n);
-		const_reference operator[](size_type n) const;
-		const_reference at(size_type n) const;
-		reference at(size_type n);
-		reference front();
-		const_reference front() const;
-		reference back();
-		const_reference back() const;
+		reference operator[](size_type n){
+			return (_data[n]);
+		}
+		const_reference operator[](size_type n) const{
+			return (_data[n]);
+		}
+		const_reference at(size_type n) const{
+			if (n >= _size)
+				throw std::out_of_range("out of range");
+			return (_data[n]);
+		}
+		reference at(size_type n){
+			if (n >= _size)
+				throw std::out_of_range("out of range");
+			return (_data[n]);
+		}
+		reference front(){
+			return (*begin());
+		}
+		const_reference front() const{
+			return (*begin());
+		}
+		reference back(){
+			return (*(end() - 1));
+		}
+		const_reference back() const{
+			return (*(end() - 1));
+		}
 		// 23.2.4.3 modifiers:
 		void push_back(const T &x){
 			if (_size + 1 > _capacity){
@@ -191,32 +210,50 @@ namespace ft
 			return (begin());
 		}
 		void insert(iterator position, size_type n, const T &x){
-			reserve(_size + n);
-			std::cout << "capacity === " << _capacity << std::endl;
-			std::cout << "size === " << _size << std::endl;
-			std::cout << "n === " << n << std::endl;
-			iterator it = this->end();
-			it--;
-			std::cout << "it === " << *it << std::endl;
-			for (; it != position + n; it--){
-				*it = *(it - 1);
-			}
-			for (size_type i = 0; i < n; i++)
-				*(position + i) = x;
+			int i = 0;
+			T* _newData;
+			_newData = _alloc.allocate(_size + n);
+			for (iterator it = begin (); it != position; it++)
+				_newData[i++] = *it;
+			for (size_type j = 0; j < n; j++)
+				_newData[i++] = x;
+			for (iterator it = position; it != end(); it++)
+				_newData[i++] = *it;
+			_alloc.deallocate(_data,_capacity);
+			_data = _newData;
+			_capacity = _size + n;
 			_size += n;
 		}
 		template <class InputIterator>
 		void insert(iterator position, InputIterator first, InputIterator last){
 			size_type a = std::distance(first,last);
-			reserve(_size + a);
-			for (iterator it = end(); it != position + a; it--)
-				*it = *(it - 1);
-			for (size_type i = 0; first != last; i++)
-				*(position++) = *(first++);
+			int i = 0;
+			T* _newData;
+			_newData = _alloc.allocate(_size + a);
+			for (iterator it = begin(); it != position; it++)
+				_newData[i++] = *it;
+			for (size_type j = 0; j < a; j++)
+				_newData[i++] = *first++;
+			for (iterator it = position; it != end(); it++)
+				_newData[i++] = *it;
+			_alloc.deallocate(_data,_capacity);
+			_data = _newData;
+			_capacity = _size + a;
 			_size += a;
 		}
-		iterator erase(iterator position);
-		iterator erase(iterator first, iterator last);
+		iterator erase(iterator position){
+			for (iterator it = position; it != end(); it++)
+				*it = *(it + 1);
+			_size--;
+			return (begin());
+		}
+		iterator erase(iterator first, iterator last){
+			size_type a = std::distance(first,last);
+			for (iterator it = first; it != end(); it++)
+				*it = *(it + a);
+			_size -= a;
+			return (begin());
+		}
 		void swap(vector<T, Allocator> &);
 		void clear(){
 			for (size_type i = 0; i < _size;i++)

@@ -49,6 +49,17 @@
 
 int main ()
 {
+  NAMESPACE::vector<char>::iterator it;
+
+//   it = myvector.begin();
+//   it = myvector.insert ( it , '1' );
+//   it = myvector.begin();
+    // std::cout << *it << std::endl;
+    // myvector.insert(it,6,'2');    
+
+//   // "it" no longer valid, get a new one:
+//   it = myvector.begin();
+
      NAMESPACE::vector<char> myvector;
     NAMESPACE::vector<char> myvector1;
     myvector.push_back('r');
@@ -56,27 +67,17 @@ int main ()
     myvector.push_back('r');
     myvector.push_back('r');
     myvector.push_back('r');
-  NAMESPACE::vector<char>::iterator it;
+    it = myvector.begin();
+//   myvector.insert (myvector.begin(), &myarray[0], &myarray[0]+3);
+  std::vector<char> anothervector (2,'b');
+  myvector.insert (it+2,anothervector.begin(),anothervector.end());
 
-  it = myvector.begin();
-//   it = myvector.insert ( it , '1' );
-//   it = myvector.begin();
-    std::cout << *it << std::endl;
-  myvector.insert(it,6,'2');
-
-//   // "it" no longer valid, get a new one:
-//   it = myvector.begin();
+//   char myarray [] = "Rachid";
 
   std::cout << "myvector contains:";
   for (it=myvector.begin(); it<myvector.end(); it++)
     std::cout << ' ' << *it;
   std::cout << '\n';
-//   std::vector<char> anothervector (2,'b');
-//   myvector.insert (it+2,anothervector.begin(),anothervector.end());
-
-//   char myarray [] = "Rachid";
-//   myvector.insert (myvector.begin(), &myarray[0], &myarray[0]+3);
-
 
   return 0;
 }
