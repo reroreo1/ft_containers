@@ -68,7 +68,7 @@ int main ()
   NAMESPACE::vector<int> foo (3,100);   // three ints with a value of 100
   NAMESPACE::vector<int> bar (5,200);   // five ints with a value of 200
 
-  NAMESPACE::swap(foo, bar);
+  NAME::swap(foo, bar);
 
   std::cout << "foo contains:";
   for (unsigned i=0; i<foo.size(); i++)

@@ -158,7 +158,7 @@ namespace ft
 		}
 		bool empty() const
 		{
-			if (!_size)
+			if (size() == 0)
 				return true;
 			return false;
 		}
@@ -175,7 +175,8 @@ namespace ft
 					_alloc.construct(&(newData[i]), _data[i]);
 					_alloc.destroy(&_data[i]);
 				}
-				_alloc.deallocate(_data, _capacity);
+				if (_data)
+					_alloc.deallocate(_data, _capacity);
 				_data = newData;
 				_capacity = n;
 			}
@@ -223,7 +224,6 @@ namespace ft
 			if (_size + 1 > _capacity)
 			{
 				this->reserve(2 * _capacity);
-				//_capacity *= 2;
 			}
 			_alloc.construct((_data + _size), x);
 			_size++;
