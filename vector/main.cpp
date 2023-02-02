@@ -47,36 +47,37 @@
 // }
 //invalid operands to binary expression ('ft::vector<char>::const_iterator' (aka 'iterator<const char>') and 'ft::vector<char, std::__1::allocator<char> >::iterator' (aka 'iterator<char>'))
 
+
+
+// template <typename T, typename = std::enable_if_t<std::is_integral<T>::value,
+//                                                   float>
+
+
+
+
+
+
+
+
+
+#include <iostream>
+#include <vector>
+
 int main ()
 {
-  NAMESPACE::vector<char>::iterator it;
+  NAMESPACE::vector<int> foo (3,100);   // three ints with a value of 100
+  NAMESPACE::vector<int> bar (5,200);   // five ints with a value of 200
 
-//   it = myvector.begin();
-//   it = myvector.insert ( it , '1' );
-//   it = myvector.begin();
-    // std::cout << *it << std::endl;
-    // myvector.insert(it,6,'2');    
+  NAMESPACE::swap(foo, bar);
 
-//   // "it" no longer valid, get a new one:
-//   it = myvector.begin();
+  std::cout << "foo contains:";
+  for (unsigned i=0; i<foo.size(); i++)
+    std::cout << ' ' << foo[i];
+  std::cout << '\n';
 
-     NAMESPACE::vector<char> myvector;
-    NAMESPACE::vector<char> myvector1;
-    myvector.push_back('r');
-    myvector.push_back('r');
-    myvector.push_back('r');
-    myvector.push_back('r');
-    myvector.push_back('r');
-    it = myvector.begin();
-//   myvector.insert (myvector.begin(), &myarray[0], &myarray[0]+3);
-  std::vector<char> anothervector (2,'b');
-  myvector.insert (it+2,anothervector.begin(),anothervector.end());
-
-//   char myarray [] = "Rachid";
-
-  std::cout << "myvector contains:";
-  for (it=myvector.begin(); it<myvector.end(); it++)
-    std::cout << ' ' << *it;
+  std::cout << "bar contains:";
+  for (unsigned i=0; i<bar.size(); i++)
+    std::cout << ' ' << bar[i];
   std::cout << '\n';
 
   return 0;

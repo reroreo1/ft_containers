@@ -8,7 +8,7 @@
 
 namespace ft
 {
-	template <class T, class Allocator = std::allocator<T>>
+	template <class T, class Allocator = std::allocator<T> >
 	class vector
 	{
 	public:
@@ -46,7 +46,7 @@ namespace ft
 		};
 		template <class InputIterator>
 		vector(InputIterator first, InputIterator last,
-			   const Allocator &a = Allocator())
+			   const Allocator &a = Allocator(),typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::value* = NULL)
 		{
 			construct1(first, last, a);
 		}
@@ -259,7 +259,7 @@ namespace ft
 			_size += n;
 		}
 		template <class InputIterator>
-		void insert(iterator position, InputIterator first, InputIterator last)
+		void insert(iterator position, InputIterator first, InputIterator last , typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::value* = NULL)
 		{
 			size_type a = std::distance(first, last);
 			int i = 0;
@@ -291,7 +291,13 @@ namespace ft
 			_size -= a;
 			return (begin());
 		}
-		void swap(vector<T, Allocator> &);
+		void swap(vector<T, Allocator> &y)
+		{
+			std::swap(this->_data, y._data);
+			std::swap(this->_size, y._size);
+			std::swap(this->_capacity, y._capacity);
+			std::swap(this->_alloc, y._alloc);
+		}
 		void clear()
 		{
 			for (size_type i = 0; i < _size; i++)
@@ -308,24 +314,16 @@ namespace ft
 		size_t _size;
 		size_t _capacity;
 		template <typename InputIterator>
-		void construct1(InputIterator first, InputIterator last, const Allocator &a = Allocator())
+		void construct1(InputIterator first, InputIterator last, const Allocator &a = Allocator()) 
 		{
 			_alloc = a;
 			_size = 0;
 			_capacity = 0;
-			_data = a.allocate(_size);
+			_data = _alloc.allocate(_size);
 			for (; first != last; first++)
 				this->push_back(*first);
 		}
 
-		template <class T, class Allocator>
-		friend void swap(vector<T, Allocator> &x, vector<T, Allocator> &y)
-		{
-			std::swap(x._data, y._data);
-			std::swap(x._size, y._size);
-			std::swap(x._capacity, y._capacity);
-			std::swap(x._alloc, y._alloc);
-		}
 	};
 	template <class T, class Allocator>
 	bool operator==(const vector<T, Allocator> &x, const vector<T, Allocator> &y)
@@ -367,6 +365,11 @@ namespace ft
 	{
 		return (!(x > y));
 	}
-}
+	template <class TT, class Allocator__>
+	void swap(vector<TT, Allocator__> &x, vector<TT, Allocator__> &y)
+	{
+		x.swap(y);
+	}
+};
 
 #endif
