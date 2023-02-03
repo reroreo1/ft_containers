@@ -12,7 +12,7 @@ namespace ft
 	public:
 		typedef   T    value_type ;
         typedef  std::ptrdiff_t  difference_type ;
-        typedef T*  pointer ;
+        typedef typename T::pointer  pointer ;
         typedef typename  T::reference  reference ;
         typedef std::random_access_iterator_tag iterator_category;
 
@@ -56,7 +56,7 @@ namespace ft
 		}
 		pointer operator->() const
 		{
-			return &(operator*());
+			return (pointer)&(operator*());
 		}
 		reverse_iterator &operator++()
 		{
@@ -123,13 +123,13 @@ namespace ft
 		const reverse_iterator<L> &x,
 		const reverse_iterator<R> &y)
 	{
-		return (x.current < y.current);
+		return (x.base() < y.base());
 	}
 
 	template <class L, class R>
 	bool operator>=(const reverse_iterator<L> &x, const reverse_iterator<R> &y)
 	{
-		return (x.current <= y.current);
+		return (x.base() <= y.base());
 	}
 
 	template <class L, class R>
@@ -137,7 +137,7 @@ namespace ft
 		const reverse_iterator<L> &x,
 		const reverse_iterator<R> &y)
 	{
-		return (x.current >= y.current);
+		return (x.base() >= y.base());
 	}
 	template <class T>
 	typename reverse_iterator<T>::difference_type operator-(
@@ -151,7 +151,7 @@ namespace ft
 		typename reverse_iterator<T>::difference_type n,
 		const reverse_iterator<T> &x)
 	{
-		return  reverse_iterator<T>(x.current - n);
+		return  reverse_iterator<T>(x.base() - n);
 	}
 
 

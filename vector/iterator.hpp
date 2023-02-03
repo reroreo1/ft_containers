@@ -16,18 +16,7 @@ namespace ft
         typedef  T&  reference ;
         typedef std::random_access_iterator_tag iterator_category;
 			// pointer;
-		// operator iterator<const T> ()
-		// {
-		// 	return iterator<const T>(this->base());
-		// }
 
-		// operator iterator< const T> () const
-		// {
-		// 	return iterator<const T>(this->base());
-		// }
-
-
-		//    template <typename   U> operator const U () {return current;}
 
 		explicit iterator(pointer x)
 		{
@@ -89,8 +78,8 @@ namespace ft
 		}
 		iterator operator+(difference_type n) const
 		{
-			iterator(current + n);
-			return (*this);
+			
+			return (iterator(current + n));
 		}
 		iterator &operator+=(difference_type n)
 		{
@@ -99,8 +88,8 @@ namespace ft
 		}
 		iterator operator-(difference_type n) const
 		{
-			iterator(current - n);
-			return (*this);
+			;
+			return (iterator(current - n));
 		}
 		iterator &operator-=(difference_type n)
 		{
@@ -112,13 +101,11 @@ namespace ft
 			return (current[n]);
 		}
 	};
-	template <class T>
+	template <class L,class R>
 	bool operator==(
-		const iterator<T> &x,
-		const iterator<T> &y)
+		const iterator<L> &x,
+		const iterator<R> &y)
 	{
-				printf("[%p] [%p]\n",x.base(), y.base() );
-
 		return (x.base() == y.base());
 	}
 	template <class L, class R>
@@ -170,5 +157,3 @@ namespace ft
 		return iterator<T>(x.base() + n);
 	}
 }
-
-// 'ft::vector<char>::const_iterator' (aka 'iterator<const char>') and 'ft::vector<char, std::__1::allocator<char> >::iterator' (aka 'iterator<char>'))

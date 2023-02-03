@@ -31,15 +31,13 @@ namespace ft
 
 
 		
-		vector(const Allocator &a = Allocator()) : _data(NULL), _size(0), _capacity(0), _alloc(a){
-			printf("n =%p\n", this );
+		vector(const Allocator &a = Allocator()) :_data(NULL), _alloc(a), _size(0), _capacity(0){
 
 			// _alloc = a;
 		}
 		explicit vector(size_type n, const T &value = T(),
 						const Allocator &a = Allocator())
 		{
-			printf("n = %lld\n", n);
 			_alloc = a;
 			_data = _alloc.allocate(n);
 			for (size_type i = 0; i < n; i++)
@@ -53,26 +51,21 @@ namespace ft
 		vector(InputIterator first, InputIterator last,
 			   const Allocator &a = Allocator(),typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::value* = NULL)
 		{
-			printf("n = \n");
 
 			construct1(first, last, a);
 		}
 
 		vector(const vector<T, Allocator> &x)
 		{
-			printf("n = \n");
-
 			construct1(x.begin(), x.end(), x._alloc);
 		};
 		~vector()
 		{
-			std::cout << this->_capacity << std::endl;
 			if (_data)
 			{
 				clear();
 				_alloc.deallocate(_data, _capacity);
 			}
-			// _alloc.deallocate(_data, _capacity);
 		}
 		vector<T, Allocator> &operator=(const vector<T, Allocator> &x)
 		{
@@ -92,9 +85,13 @@ namespace ft
 		void assign(InputIterator first, InputIterator last)
 		{
 			size_t a = std::distance(first, last);
+			if (first == last)
+				return ;
+			if (a < 0)
+				std::swap(first,last);
 			int i = 0;
 			clear();
-			if (a >= _capacity)
+			if (a > _capacity)
 				reserve(a);
 			for (; first != last; ++first)
 			{
@@ -135,7 +132,9 @@ namespace ft
 		{
 			return reverse_iterator(end());
 		}
-		const_reverse_iterator rbegin() const {};
+		const_reverse_iterator rbegin() const {
+			return const_reverse_iterator(end());
+		};
 		reverse_iterator rend()
 		{
 			return (reverse_iterator(begin()));
@@ -178,6 +177,8 @@ namespace ft
 		}
 		void reserve(size_type n)
 		{
+			if (n < 0)
+				return ;
 			T *newData;
 			if (n == 0)
 				n = 1;
@@ -251,11 +252,21 @@ namespace ft
 		};
 		iterator insert(iterator position, const T &x)
 		{
-			reserve(_size + 1);
-			for (iterator it = end(); it != position; it--)
-				*it = *(it - 1);
-			*position = x;
+			int i = 0;
+			T *_newData = NULL;
+			_newData = _alloc.allocate(_size + 1);
+			for (iterator it = begin(); it != position; it++)
+				_alloc.construct(&_newData[i++], *it);
+			_alloc.construct(&_newData[i++], x);
+			for (iterator it = position; it != end(); it++)
+				_alloc.construct(&_newData[i++], *it);
+			for (size_type i = 0; i < _size; i++)
+				_alloc.destroy(&_data[i]);
+			if (_data)
+				_alloc.deallocate(_data, _capacity);
+			_data = _newData;
 			_size++;
+			_capacity = _size;
 			return (begin());
 		}
 		void insert(iterator position, size_type n, const T &x)
@@ -317,8 +328,6 @@ namespace ft
 		}
 		void clear()
 		{
-			std::cout << this->_size << std::endl;
-			std::cout << this->_capacity << std::endl;
 			for (size_type i = 0; i < _size; i++)
 			{
 				_alloc.destroy(&_data[i]);
@@ -358,7 +367,7 @@ namespace ft
 	bool operator<(const vector<T, Allocator> &x,
 				   const vector<T, Allocator> &y)
 	{
-		return (lexicographical_compare(x.begin(), x.end(), y.begin(), y.end()));
+		return (ft::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end()));
 	}
 	template <class T, class Allocator>
 	bool operator!=(const vector<T, Allocator> &x,
