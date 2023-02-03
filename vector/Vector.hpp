@@ -29,12 +29,17 @@ namespace ft
 		typedef reverse_iterator<iterator> reverse_iterator;
 		// typedef ft::reverse_iterator<iterator> reverse_iterator;
 
-		explicit vector(const Allocator &a = Allocator()) : _data(NULL), _alloc(a), _size(0), _capacity(0){
 
-																							  };
+		
+		vector(const Allocator &a = Allocator()) : _data(NULL), _size(0), _capacity(0), _alloc(a){
+			printf("n =%p\n", this );
+
+			// _alloc = a;
+		}
 		explicit vector(size_type n, const T &value = T(),
 						const Allocator &a = Allocator())
 		{
+			printf("n = %lld\n", n);
 			_alloc = a;
 			_data = _alloc.allocate(n);
 			for (size_type i = 0; i < n; i++)
@@ -48,17 +53,26 @@ namespace ft
 		vector(InputIterator first, InputIterator last,
 			   const Allocator &a = Allocator(),typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::value* = NULL)
 		{
+			printf("n = \n");
+
 			construct1(first, last, a);
 		}
 
 		vector(const vector<T, Allocator> &x)
 		{
+			printf("n = \n");
+
 			construct1(x.begin(), x.end(), x._alloc);
 		};
 		~vector()
 		{
-			clear();
-			_alloc.deallocate(_data, _capacity);
+			std::cout << this->_capacity << std::endl;
+			if (_data)
+			{
+				clear();
+				_alloc.deallocate(_data, _capacity);
+			}
+			// _alloc.deallocate(_data, _capacity);
 		}
 		vector<T, Allocator> &operator=(const vector<T, Allocator> &x)
 		{
@@ -77,7 +91,7 @@ namespace ft
 		template <class InputIterator>
 		void assign(InputIterator first, InputIterator last)
 		{
-			int a = std::distance(first, last);
+			size_t a = std::distance(first, last);
 			int i = 0;
 			clear();
 			if (a >= _capacity)
@@ -167,12 +181,14 @@ namespace ft
 			T *newData;
 			if (n == 0)
 				n = 1;
+			if (n > max_size())
+				throw std::length_error("Bad reserve");
 			if (_capacity < n)
 			{
 				newData = _alloc.allocate(n);
 				for (size_type i = 0; i < _size; i++)
 				{
-					_alloc.construct(&(newData[i]), _data[i]);
+					_alloc.construct(&newData[i], _data[i]);
 					_alloc.destroy(&_data[i]);
 				}
 				if (_data)
@@ -280,6 +296,7 @@ namespace ft
 		{
 			for (iterator it = position; it != end(); it++)
 				*it = *(it + 1);
+			_alloc.destroy(&_data[_size - 1]);
 			_size--;
 			return (begin());
 		}
@@ -300,6 +317,8 @@ namespace ft
 		}
 		void clear()
 		{
+			std::cout << this->_size << std::endl;
+			std::cout << this->_capacity << std::endl;
 			for (size_type i = 0; i < _size; i++)
 			{
 				_alloc.destroy(&_data[i]);
@@ -310,7 +329,7 @@ namespace ft
 	private:
 		// posize_typeer to the underlying array allocated by the allocator
 		T *_data;
-		Allocator _alloc;
+		 Allocator _alloc;
 		size_t _size;
 		size_t _capacity;
 		template <typename InputIterator>
@@ -339,7 +358,7 @@ namespace ft
 	bool operator<(const vector<T, Allocator> &x,
 				   const vector<T, Allocator> &y)
 	{
-		return lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());
+		return (lexicographical_compare(x.begin(), x.end(), y.begin(), y.end()));
 	}
 	template <class T, class Allocator>
 	bool operator!=(const vector<T, Allocator> &x,
