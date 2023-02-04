@@ -23,12 +23,10 @@ namespace ft
 			current = x;
 		}
 
-
-		 iterator()
+		iterator()
 		{
 			this->current = NULL;
 		}
-
 
 		iterator operator=(const  iterator &lh  ) 
 		{

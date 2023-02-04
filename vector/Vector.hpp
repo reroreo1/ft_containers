@@ -5,7 +5,7 @@
 #include "iterator.hpp"
 #include "Utils.hpp"
 #include <memory>
-
+#include <iostream>
 namespace ft
 {
 	template <class T, class Allocator = std::allocator<T> >
@@ -153,12 +153,16 @@ namespace ft
 		}
 		void resize(size_type sz, T c = T())
 		{
+			if (sz < 0)
+				return ;
+			if (sz > max_size())
+				throw std::length_error("Bad reserve");
 			if (sz < _size)
 			{
 				for (size_type i = sz; i < _size; i++)
 					_alloc.destroy(&_data[i]);
 			}
-			else if (sz > _size)
+			if (sz > _size)
 			{
 				for (size_type i = _size; i < sz; i++)
 					this->push_back(c);
@@ -254,10 +258,11 @@ namespace ft
 		{
 			int i = 0;
 			T *_newData = NULL;
-			_newData = _alloc.allocate(_size + 1);
+			_newData = _alloc.allocate(_size + 1);  //  check capacity
 			for (iterator it = begin(); it != position; it++)
 				_alloc.construct(&_newData[i++], *it);
 			_alloc.construct(&_newData[i++], x);
+			iterator t(_newData + i - 1);
 			for (iterator it = position; it != end(); it++)
 				_alloc.construct(&_newData[i++], *it);
 			for (size_type i = 0; i < _size; i++)
@@ -267,7 +272,7 @@ namespace ft
 			_data = _newData;
 			_size++;
 			_capacity = _size;
-			return (begin());
+			return (t);
 		}
 		void insert(iterator position, size_type n, const T &x)
 		{
@@ -277,10 +282,11 @@ namespace ft
 			for (iterator it = begin(); it != position; it++)
 				_newData[i++] = *it;
 			for (size_type j = 0; j < n; j++)
-				_newData[i++] = x;
+				_alloc.construct(&_newData[i++],x);
 			for (iterator it = position; it != end(); it++)
 				_newData[i++] = *it;
-			_alloc.deallocate(_data, _capacity);
+			if (_data)
+				_alloc.deallocate(_data, _capacity);
 			_data = _newData;
 			_capacity = _size + n;
 			_size += n;
@@ -288,17 +294,27 @@ namespace ft
 		template <class InputIterator>
 		void insert(iterator position, InputIterator first, InputIterator last , typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::value* = NULL)
 		{
-			size_type a = std::distance(first, last);
+			ft::vector<T> tmp;
+			// std::cout << "tmp size " << tmp.size() << *first << std::endl;
+			// 	for (; first != last; first++)
+			// 		tmp.push_back(*first);
+			// size_type a = tmp.size();
 			int i = 0;
 			T *_newData;
 			_newData = _alloc.allocate(_size + a);
-			for (iterator it = begin(); it != position; it++)
-				_newData[i++] = *it;
-			for (size_type j = 0; j < a; j++)
-				_newData[i++] = *first++;
-			for (iterator it = position; it != end(); it++)
-				_newData[i++] = *it;
-			_alloc.deallocate(_data, _capacity);
+			for (iterator it = begin(); it != position; it++){
+				_alloc.construct(&_newData[i++],*it);
+			}
+			for (iterator it = tmp.begin(); it != tmp.end() ;it++){
+				// std::cout << "hna lfirst" << std::endl;
+				_alloc.construct(&_newData[i++],*it);
+			}
+			for (iterator it = position + 1;it != end();it++)
+				_alloc.construct(&_newData[i++],*it);
+			for (size_type i = 0; i < _size; i++)
+				_alloc.destroy(&_data[i]);
+			if (_data)
+				_alloc.deallocate(_data, _capacity);
 			_data = _newData;
 			_capacity = _size + a;
 			_size += a;
