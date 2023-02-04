@@ -70,7 +70,7 @@ namespace ft
 		vector<T, Allocator> &operator=(const vector<T, Allocator> &x)
 		{
 			clear();
-			if (!_data)
+			if (_data)
 				_alloc.deallocate(_data, _capacity);
 			_data = _alloc.allocate(x._capacity);
 			for (size_type i = 0; i < x._size; i++)
@@ -84,20 +84,11 @@ namespace ft
 		template <class InputIterator>
 		void assign(InputIterator first, InputIterator last)
 		{
-			size_t a = std::distance(first, last);
+			clear();
 			if (first == last)
 				return ;
-			if (a < 0)
-				std::swap(first,last);
-			int i = 0;
-			clear();
-			if (a > _capacity)
-				reserve(a);
 			for (; first != last; ++first)
-			{
-				_alloc.construct(&_data[i++], *first);
-			}
-			_size = a;
+				this->push_back(*first);
 		}
 		void assign(size_type n, const T &u)
 		{
@@ -149,6 +140,8 @@ namespace ft
 		}
 		size_type max_size() const
 		{
+			if (sizeof(T) == 1)
+				return _alloc.max_size() / 2;
 			return _alloc.max_size();
 		}
 		void resize(size_type sz, T c = T())
@@ -280,11 +273,13 @@ namespace ft
 			T *_newData;
 			_newData = _alloc.allocate(_size + n);
 			for (iterator it = begin(); it != position; it++)
-				_newData[i++] = *it;
+				_alloc.construct(&_newData[i++],*it);
 			for (size_type j = 0; j < n; j++)
 				_alloc.construct(&_newData[i++],x);
 			for (iterator it = position; it != end(); it++)
-				_newData[i++] = *it;
+				_alloc.construct(&_newData[i++],*it);
+			for (size_type i = 0; i < _size; i++)
+				_alloc.destroy(&_data[i]);
 			if (_data)
 				_alloc.deallocate(_data, _capacity);
 			_data = _newData;
@@ -294,22 +289,18 @@ namespace ft
 		template <class InputIterator>
 		void insert(iterator position, InputIterator first, InputIterator last , typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::value* = NULL)
 		{
-			ft::vector<T> tmp;
-			// std::cout << "tmp size " << tmp.size() << *first << std::endl;
-			// 	for (; first != last; first++)
-			// 		tmp.push_back(*first);
-			// size_type a = tmp.size();
+			vector<T> tmp;
+			for (;first != last; first++)
+				tmp.push_back(*first);
 			int i = 0;
 			T *_newData;
+			size_type a = tmp.size();
 			_newData = _alloc.allocate(_size + a);
-			for (iterator it = begin(); it != position; it++){
+			for (iterator it = begin(); it != position; it++)
 				_alloc.construct(&_newData[i++],*it);
-			}
-			for (iterator it = tmp.begin(); it != tmp.end() ;it++){
-				// std::cout << "hna lfirst" << std::endl;
+			for (iterator it = tmp.begin(); it != tmp.end(); it++)
 				_alloc.construct(&_newData[i++],*it);
-			}
-			for (iterator it = position + 1;it != end();it++)
+			for (iterator it = position; it != end(); it++)
 				_alloc.construct(&_newData[i++],*it);
 			for (size_type i = 0; i < _size; i++)
 				_alloc.destroy(&_data[i]);
@@ -321,19 +312,22 @@ namespace ft
 		}
 		iterator erase(iterator position)
 		{
-			for (iterator it = position; it != end(); it++)
+			for (iterator it = position; it != end() - 1; it++)
 				*it = *(it + 1);
-			_alloc.destroy(&_data[_size - 1]);
-			_size--;
-			return (begin());
+			pop_back();
+			return (iterator(position));
 		}
 		iterator erase(iterator first, iterator last)
 		{
 			size_type a = std::distance(first, last);
-			for (iterator it = first; it != end(); it++)
-				*it = *(it + a);
+			std::cout << "-------" << a<< std::endl;
+			for (iterator it = first; it != end(); it++){
+2				*it = *(it + a);
+			}
+			for(size_type i = _size - a; i < _size; i++)
+				_alloc.destroy(&_data[i]);
 			_size -= a;
-			return (begin());
+			return (first);
 		}
 		void swap(vector<T, Allocator> &y)
 		{
