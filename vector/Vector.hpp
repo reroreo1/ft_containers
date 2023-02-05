@@ -312,23 +312,28 @@ namespace ft
 		}
 		iterator erase(iterator position)
 		{
-			for (iterator it = position; it != end() - 1; it++)
+			for (iterator it = position; it < end() - 1; it++)
 				*it = *(it + 1);
 			pop_back();
 			return (iterator(position));
 		}
+
 		iterator erase(iterator first, iterator last)
 		{
-			size_type a = std::distance(first, last);
-			std::cout << "-------" << a<< std::endl;
-			for (iterator it = first; it != end(); it++){
-2				*it = *(it + a);
+			difference_type diff = first - begin();
+            difference_type range = last - first;
+            for(size_t i = diff; i < _size - 1; i++){
+				// std::cout << "i == " << i << std::endl;
+				iterator it = iterator(&_data[i]);
+                if(i + range < _size)
+                	it = erase(it);
 			}
-			for(size_type i = _size - a; i < _size; i++)
+			for(size_type i = _size; i < _size + range; i++)
 				_alloc.destroy(&_data[i]);
-			_size -= a;
-			return (first);
+			_size -= range;
+            return (begin() + diff);
 		}
+
 		void swap(vector<T, Allocator> &y)
 		{
 			std::swap(this->_data, y._data);

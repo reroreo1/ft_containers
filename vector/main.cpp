@@ -64,8 +64,8 @@ int main()
     vec.push_back("d");
     vec.push_back("d");
 
-           vec.erase(vec.begin() + 3, vec.begin() + 16);
-    vec.assign(s, s);
+    vec.erase(vec.begin() + 3, vec.end() - 1);
+    // vec.assign(s, s);
     std::cout << vec.size() << std::endl;
   return 0;
 }
