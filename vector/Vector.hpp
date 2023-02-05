@@ -320,18 +320,12 @@ namespace ft
 
 		iterator erase(iterator first, iterator last)
 		{
-			difference_type diff = first - begin();
             difference_type range = last - first;
-            for(size_t i = diff; i < _size - 1; i++){
-				// std::cout << "i == " << i << std::endl;
-				iterator it = iterator(&_data[i]);
-                if(i + range < _size)
-                	it = erase(it);
-			}
-			for(size_type i = _size; i < _size + range; i++)
+            std::copy(last,end(),first);
+			for(size_type i = _size - range; i < _size; i++)
 				_alloc.destroy(&_data[i]);
 			_size -= range;
-            return (begin() + diff);
+            return (last);
 		}
 
 		void swap(vector<T, Allocator> &y)
