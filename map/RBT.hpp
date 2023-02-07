@@ -6,15 +6,15 @@
 /*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 16:19:14 by mac               #+#    #+#             */
-/*   Updated: 2023/02/07 16:41:44 by mac              ###   ########.fr       */
+/*   Updated: 2023/02/07 21:07:04 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef RBT_HPP
 #define RBT_HPP
-
+template <class T>
 struct Node{
-    int value;
+    T data;
     Node *left;
     Node *right;
     Node *parent;
@@ -26,9 +26,6 @@ class Rbt{
         Node *root;
         Node *nil;
 };
-
-
-
 
 
 
